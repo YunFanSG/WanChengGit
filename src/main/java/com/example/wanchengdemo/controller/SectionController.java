@@ -3,6 +3,7 @@ package com.example.wanchengdemo.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.wanchengdemo.commom.R;
+import com.example.wanchengdemo.entity.Project;
 import com.example.wanchengdemo.entity.Section;
 import com.example.wanchengdemo.service.SectionService;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,10 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
+@CrossOrigin(origins = "*",maxAge = 3600)
 @RestController
 @RequestMapping("/section")
 public class SectionController {
@@ -27,6 +31,23 @@ public class SectionController {
         sectionService.page(pageInfo,lambdaQueryWrapper);
 
         return R.success(pageInfo);
+    }
+
+    //查询所有
+    @GetMapping
+    public R<List> getAll(Section section){
+        //条件构造器
+        LambdaQueryWrapper<Section> queryWrapper = new LambdaQueryWrapper();
+        //按项合同名
+        queryWrapper.like(StringUtils.isNotEmpty(section.getSname()),Section::getSname,section.getSname());
+        //按检测单位
+        queryWrapper.like(StringUtils.isNotEmpty(section.getStesting()),Section::getStesting,section.getStesting());
+        //按施工单位
+        queryWrapper.like(StringUtils.isNotEmpty(section.getScons()),Section::getScons,section.getScons());
+        //按id
+
+        List<Section> list = sectionService.list(queryWrapper);
+        return R.success(list);
     }
 
     //增加数据

@@ -12,7 +12,10 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
+@CrossOrigin(origins = "*",maxAge = 3600)
 @RestController
 @RequestMapping("/site")
 public class SiteController {
@@ -30,6 +33,29 @@ public class SiteController {
 
         siteService.page(pagInfo,queryWrapper);
         return R.success(pagInfo);
+    }
+
+    //查询所有
+    @GetMapping
+    public R<List> getAll(Site site){
+        LambdaQueryWrapper<Site> queryWrapper = new LambdaQueryWrapper<>();
+        //按桩号查询
+        queryWrapper.like(StringUtils.isNotEmpty(site.getSitecode()),Site::getSitecode,site.getSitecode());
+        //按车道
+        queryWrapper.like(StringUtils.isNotEmpty(site.getSitelane()),Site::getSitelane,site.getSitelane());
+        //按左侧弯沉值
+        queryWrapper.like(StringUtils.isNotEmpty(String.valueOf(site.getDeflectio1())),Site::getSitelane,site.getDeflectio1());
+        //按右侧弯沉值
+        queryWrapper.like(StringUtils.isNotEmpty(String.valueOf(site.getDeflectio2())),Site::getDeflectio2,site.getDeflectio2());
+
+
+
+
+
+
+
+        List<Site> list = siteService.list();
+        return R.success(list);
     }
 
     //增加数据

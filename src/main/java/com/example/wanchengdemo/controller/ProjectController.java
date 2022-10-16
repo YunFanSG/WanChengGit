@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Slf4j
+@CrossOrigin(origins = "*",maxAge = 3600)
 @RestController
 @RequestMapping("/project")
 public class ProjectController {
@@ -40,7 +42,7 @@ public class ProjectController {
         //添加一个过滤条件
         queryWrapper.like(StringUtils.isNotEmpty(pname),Project::getPname,pname);
         //添加一个排序条件
-        queryWrapper.orderByAsc(Project::getPname);
+        queryWrapper.orderByAsc(Project::getPid);
 
         //执行查询
         projectService.page(pageInfo,queryWrapper);
@@ -48,6 +50,8 @@ public class ProjectController {
         return R.success(pageInfo);
 
     }
+
+
 
 
     //新增数据
@@ -75,12 +79,45 @@ public class ProjectController {
     @PutMapping
     public R<String> updata(@RequestBody Project project){
         LambdaQueryWrapper<Project> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(Project::getPid,project.getPid());
+        lambdaQueryWrapper.eq(Project::getPname,project.getPname());
 
         log.info("pid {}",project.getPid());
         projectService.update(project,lambdaQueryWrapper);
         return R.success("修改成功");
     }
+
+    //查询所有 或模糊查询
+    @GetMapping
+    public R<List> getAll(Project project){
+        //条件构造器
+        LambdaQueryWrapper<Project> queryWrapper = new LambdaQueryWrapper();
+        //按项目名
+        queryWrapper.like(StringUtils.isNotEmpty(project.getPname()),Project::getPname,project.getPname());
+        //按项目所有人
+        queryWrapper.like(StringUtils.isNotEmpty(project.getPowner()),Project::getPowner,project.getPowner());
+        //按id
+
+        //无参则查询所有
+        List<Project> list = projectService.list(queryWrapper);
+        return R.success(list);
+    }
+
+    //模糊查询  待测试
+  /*  @GetMapping("/getLike")
+    public R<List> getLike(@RequestBody Project project){
+        LambdaQueryWrapper<Project> queryWrapper = new LambdaQueryWrapper();
+
+        //按项目名
+        queryWrapper.like(StringUtils.isNotEmpty(project.getPname()),Project::getPname,project.getPname());
+//
+        //按项目所有人
+        queryWrapper.like(StringUtils.isNotEmpty(project.getPowner()),Project::getPowner,project.getPowner());
+
+        List<Project> list = projectService.list(queryWrapper);
+
+        return R.success(list);
+    }
+*/
 
 
 }

@@ -13,14 +13,14 @@ import java.util.Date;
 import java.util.List;
 
 @Component
-public class Token{
+public class TestJwt{
 
     /**
      * 生成token
      * @param user
      * @return
      */
-    public String generateToken(User user) {
+    public static String generateToken(User user) {
         Date start = new Date();
         long currentTime = System.currentTimeMillis() + 60* 60 * 1000;//一小时有效时间
         Date end = new Date(currentTime);
@@ -65,7 +65,7 @@ public class Token{
      * @return
      * 获取token
      */
-    public String getToken(HttpServletRequest request) {
+    public static String getToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         for (Cookie c :
                 cookies) {

@@ -1,6 +1,9 @@
 package com.example.wanchengdemo.entity;
 
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+
 public class User {
 
   private long uid;
@@ -42,6 +45,12 @@ public class User {
 
   public void setDepartment(String department) {
     this.department = department;
+  }
+
+
+  public String getToken(User user) {
+    return JWT.create().withAudience(user.getUsername())
+            .sign(Algorithm.HMAC256(user.getPwd()));
   }
 
   @Override
