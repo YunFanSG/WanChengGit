@@ -1,7 +1,7 @@
 package com.example.wanchengdemo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.wanchengdemo.entity.User;
+import com.example.wanchengdemo.domain.User;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

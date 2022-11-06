@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /*
-* MP插件配置
-* */
+ * MP插件配置
+ * */
 @Configuration
 public class MpConfig {
 
@@ -18,3 +18,4 @@ public class MpConfig {
         return mybatisPlusInterceptor;
     }
 }
+

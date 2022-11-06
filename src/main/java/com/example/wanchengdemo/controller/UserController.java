@@ -2,18 +2,22 @@ package com.example.wanchengdemo.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.wanchengdemo.annotation.PassToken;
 import com.example.wanchengdemo.annotation.UserLoginToken;
+import com.example.wanchengdemo.commom.IdGetSnowflake;
 import com.example.wanchengdemo.commom.R;
-import com.example.wanchengdemo.entity.User;
+import com.example.wanchengdemo.domain.User;
+import com.example.wanchengdemo.entity.vo.ResultVO;
 import com.example.wanchengdemo.service.UserService;
-import com.example.wanchengdemo.util.TestJwt;
+import com.example.wanchengdemo.util.JwtUtil;
+import com.example.wanchengdemo.util.ResultVOUtil;
+import io.jsonwebtoken.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 
 
@@ -27,7 +31,7 @@ public class UserController {
     private UserService userService;
     
     
-    /*@PostMapping("/login")
+    @PostMapping("/login")
     public R<String> login(HttpServletRequest request, @RequestBody User user){
         // 1.将密码进行MD5加密
         
@@ -58,9 +62,9 @@ public class UserController {
         return R.success("登录成功");
 
 
-    }*/
+    }
 
-    @PassToken
+    /*@PassToken
     @PostMapping("/login")
     public R<String> login(HttpServletRequest request, @RequestBody User user){
         // 1.将密码进行MD5加密
@@ -117,10 +121,16 @@ public class UserController {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper();
         queryWrapper.eq(User::getUsername,user.getUsername());
         User ump = userService.getOne(queryWrapper);
+        IdGetSnowflake idGetSnowflake = new IdGetSnowflake();
+        long snowflakeId = idGetSnowflake.snowflakeId();
+
 
         //3.如果没有查询到则继续
         if ( ump == null){
             log.info("开始新增用户");
+            user.setUid(String.valueOf(snowflakeId));
+            log.info("新增uid为：{}",user.getUid());
+
             System.out.println(user);
             userService.save(user);
             return R.success("添加用户成功");
@@ -155,8 +165,8 @@ public class UserController {
     @GetMapping
     public R<List> getAll(User user){
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper();
-
-        queryWrapper.like(user.getUid() != 0,User::getUid,user.getUid());
+        //根据id查询
+        queryWrapper.eq(StringUtils.isNotEmpty(user.getUid()),User::getUid,user.getUid());
         queryWrapper.like(StringUtils.isNotEmpty(user.getUsername()),User::getUsername,user.getUsername());
         queryWrapper.like(StringUtils.isNotEmpty(user.getDepartment()),User::getDepartment,user.getDepartment());
 
@@ -207,11 +217,6 @@ public class UserController {
     }
 
 
-    @UserLoginToken
-        @GetMapping("/getMessage")
-    public String getMessage(){
-        return "你已通过验证";
-    }
 
 
 

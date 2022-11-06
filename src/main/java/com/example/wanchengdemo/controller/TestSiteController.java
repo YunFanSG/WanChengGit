@@ -1,3 +1,4 @@
+package com.example.wanchengdemo.controller;/*
 package com.example.wanchengdemo.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -10,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
+*/
 /*@RestController
-@RequestMapping("/site")*/
+@RequestMapping("/site")*//*
+
 public class TestSiteController {
     @Autowired
     private SiteService siteService;
@@ -25,3 +28,4 @@ public class TestSiteController {
         return R.success(pagInfo);
     }
 }
+*/

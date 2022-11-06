@@ -2,10 +2,9 @@ package com.example.wanchengdemo.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.wanchengdemo.commom.IdGetSnowflake;
 import com.example.wanchengdemo.commom.R;
-import com.example.wanchengdemo.entity.Project;
-import com.example.wanchengdemo.entity.Segment;
-import com.example.wanchengdemo.entity.Site;
+import com.example.wanchengdemo.domain.Site;
 import com.example.wanchengdemo.service.SiteService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -39,14 +38,27 @@ public class SiteController {
     @GetMapping
     public R<List> getAll(Site site){
         LambdaQueryWrapper<Site> queryWrapper = new LambdaQueryWrapper<>();
+
+        //按id
+        queryWrapper.eq(StringUtils.isNotEmpty(site.getSiteid()),Site::getSiteid,site.getSiteid());
+
+        //按sitesid
+        queryWrapper.eq(StringUtils.isNotEmpty(site.getSitesid()),Site::getSitesid,site.getSitesid());
+
         //按桩号查询
-        queryWrapper.like(StringUtils.isNotEmpty(site.getSitecode()),Site::getSitecode,site.getSitecode());
+       queryWrapper.like(StringUtils.isNotEmpty(site.getSitecode()),Site::getSitecode,site.getSitecode());
         //按车道
         queryWrapper.like(StringUtils.isNotEmpty(site.getSitelane()),Site::getSitelane,site.getSitelane());
-        //按左侧弯沉值
-        queryWrapper.like(StringUtils.isNotEmpty(String.valueOf(site.getDeflectio1())),Site::getSitelane,site.getDeflectio1());
+//        //按左侧弯沉值
+        if (site.getDeflectio1() > 0){
+            queryWrapper.like(StringUtils.isNotEmpty(String.valueOf(site.getDeflectio1())),Site::getDeflectio1,site.getDeflectio1());
+
+        }
         //按右侧弯沉值
-        queryWrapper.like(StringUtils.isNotEmpty(String.valueOf(site.getDeflectio2())),Site::getDeflectio2,site.getDeflectio2());
+        if (site.getDeflectio2() > 0){
+            queryWrapper.like(StringUtils.isNotEmpty(String.valueOf(site.getDeflectio2())),Site::getDeflectio2,site.getDeflectio2());
+
+        }
 
 
 
@@ -54,7 +66,12 @@ public class SiteController {
 
 
 
-        List<Site> list = siteService.list();
+
+
+
+
+
+        List<Site> list = siteService.list(queryWrapper);
         return R.success(list);
     }
 
@@ -64,7 +81,10 @@ public class SiteController {
     public R<String> insert(@RequestBody Site site){
         LambdaQueryWrapper<Site> lambdaQueryWrapper = new LambdaQueryWrapper();
         lambdaQueryWrapper.eq(Site::getSiteid,site.getSiteid());
+        IdGetSnowflake idGetSnowflake = new IdGetSnowflake();
+        long snowflakeId = idGetSnowflake.snowflakeId();
 
+        site.setSiteid(String.valueOf(snowflakeId));
         siteService.save(site);
         return R.success("添加成功");
     }

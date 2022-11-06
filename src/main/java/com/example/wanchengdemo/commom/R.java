@@ -1,39 +1,67 @@
 package com.example.wanchengdemo.commom;
 
+
 import lombok.Data;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.LinkedHashMap;
+import java.util.Objects;
+import org.springframework.http.HttpStatus;
 // 通用返回结果类，服务端返回结果最终都会返回为此对象
 
 
 @Data
-public class R<T> {
+public class R<T> extends LinkedHashMap<String, Object> {
+    private Integer code;
+    private String msg;
+    private Object data;
+    public static final String CODE_TAG = "code";
+    public static final String MSG_TAG = "msg";
+    public static final String DATA_TAG = "data";
+    private static final long serialVersionUID = 1L;
 
-    private Integer code; //编码：1成功，0和其它数字为失败
-
-    private String msg; //错误信息
-
-    private T data; //数据
-
-    private Map map = new HashMap(); //动态数据
-
-    public static <T> R<T> success(T object) {
-        R<T> r = new R<T>();
-        r.data = object;
-        r.code = 1;
-        return r;
+    public R() {
     }
 
-    public static <T> R<T> error(String msg) {
-        R r = new R();
-        r.msg = msg;
-        r.code = 0;
-        return r;
+    public R(int code, String msg) {
+        super.put("code", code);
+        super.put("msg", msg);
     }
 
-    public R<T> add(String key, Object value) {
-        this.map.put(key, value);
-        return this;
+    public R(int code, String msg, Object data) {
+        super.put("code", code);
+        super.put("msg", msg);
+        if (Objects.nonNull(data)) {
+            super.put("data", data);
+        }
+
+    }
+    public static R success() {
+        return success("操作成功");
     }
 
+    public static R success(Object data) {
+        return success("操作成功", data);
+    }
+    public static R success(String msg) {
+        return success(msg, (Object)null);
+    }
+
+    public static R success(String msg, Object data) {
+        return new R(HttpStatus.OK.value(), msg, data);
+    }
+    public static R error() {
+        return error("操作失败");
+    }
+
+    public static R error(String msg) {
+        return error(msg, null);
+    }
+
+    public static R error(String msg, Object data) {
+        return new R(HttpStatus.INTERNAL_SERVER_ERROR.value(), msg, data);
+    }
+
+    public static R error(int code, String msg) {
+        return new R<>(code, msg, null);
+    }
 }

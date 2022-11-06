@@ -10,7 +10,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.wanchengdemo.annotation.PassToken;
 import com.example.wanchengdemo.annotation.UserLoginToken;
 import com.example.wanchengdemo.commom.R;
-import com.example.wanchengdemo.entity.User;
+import com.example.wanchengdemo.domain.User;
 import com.example.wanchengdemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;

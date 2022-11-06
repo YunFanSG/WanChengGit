@@ -2,17 +2,18 @@ package com.example.wanchengdemo.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.wanchengdemo.commom.IdGetSnowflake;
 import com.example.wanchengdemo.commom.R;
-import com.example.wanchengdemo.entity.Project;
-import com.example.wanchengdemo.entity.Section;
-import com.example.wanchengdemo.entity.Segment;
+import com.example.wanchengdemo.domain.Segment;
 import com.example.wanchengdemo.service.SegmentService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import xin.altitude.cms.common.entity.PageEntity;
 
 import java.util.List;
+
 
 @Slf4j
 @CrossOrigin(origins = "*",maxAge = 3600)
@@ -42,15 +43,25 @@ public class SegmentController {
         LambdaQueryWrapper<Segment> queryWrapper = new LambdaQueryWrapper();
         //按检测范围
         queryWrapper.like(StringUtils.isNotEmpty(segment.getSegrange()),Segment::getSegrange,segment.getSegrange());
+        //根据id
+        queryWrapper.eq(StringUtils.isNotEmpty(segment.getSegid()),Segment::getSegid,segment.getSegid());
         //按设计弯沉值
         queryWrapper.like(StringUtils.isNotEmpty(segment.getSegdesign()),Segment::getSegdesign,segment.getSegdesign());
         //按时间
         queryWrapper.like(StringUtils.isNotEmpty(segment.getSegdate()),Segment::getSegdate,segment.getSegdate());
 
 
+        //按segsid
+        queryWrapper.eq(StringUtils.isNotEmpty(segment.getSegsid()),Segment::getSegsid,segment.getSegsid());
+
+
         List<Segment> list = segmentService.list(queryWrapper);
         return R.success(list);
     }
+
+    //segment infomation
+    //为segment 查询主要信息:date,检测单位,检测段落,
+
 
     //增加数据
 
@@ -58,7 +69,10 @@ public class SegmentController {
     public R<String> insert(@RequestBody Segment segment){
         LambdaQueryWrapper<Segment> lambdaQueryWrapper = new LambdaQueryWrapper();
         lambdaQueryWrapper.eq(Segment::getSegid,segment.getSegid());
+        IdGetSnowflake idGetSnowflake = new IdGetSnowflake();
+        long snowflakeId = idGetSnowflake.snowflakeId();
 
+        segment.setSegid(String.valueOf(snowflakeId));
         segmentService.save(segment);
         return R.success("添加成功");
     }
@@ -85,7 +99,18 @@ public class SegmentController {
         return R.success("修改成功");
     }
 
-
+    @GetMapping("/vo/page")
+    public R pageVo(PageEntity pageEntity, Segment segment){
+        return R.success(segmentService.pageVo(pageEntity.toPage(), segment));
+    }
+    @GetMapping("/vo/list")
+    public R listVo(Segment segment){
+        return R.success(segmentService.listVo(segment));
+    }
+    @GetMapping(value = "/vo/detail/{segid}")
+    public R detailVo(@PathVariable("segid") String segid) {
+        return R.success(segmentService.getOneVo(segid));
+    }
 
 
 }
