@@ -1,5 +1,10 @@
 package com.example.wanchengdemo.controller.data;
 
+import cn.hutool.core.text.csv.CsvData;
+import cn.hutool.core.text.csv.CsvUtil;
+import cn.hutool.core.text.csv.CsvWriter;
+import cn.hutool.core.util.CharsetUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.wanchengdemo.commom.IdGetSnowflake;
 
 import com.example.wanchengdemo.entity.data.Project;
@@ -162,7 +167,32 @@ public class CommonController {
     }
 
     @RequestMapping("/download")
-    public void Download(){
+    public void Download(String siteid){
+        LambdaQueryWrapper<Site> siteLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        siteLambdaQueryWrapper.eq(Site::getSiteid,siteid);
+        List<Site> list = siteService.list(siteLambdaQueryWrapper);
+        Site byId = siteService.getOne(siteLambdaQueryWrapper);
+
+
+        //指定路径和编码
+        CsvWriter writer = CsvUtil.getWriter("D:\\OutStoreg\\outTest.csv", CharsetUtil.CHARSET_GBK);
+        //表头
+        String[] title = {"检测点id","检测点码","车道","左侧初读数","左侧终读数","左侧弯沉值","左侧初读数","右侧终读数","右侧弯沉值",
+                "左侧支点修正系数","右侧支点修正系数","温度修正","备注","外键","更新人","更新时间","创建时间"};
+        String[] data = new String[17];
+
+        int i = 0;
+        for (Site site : list) {
+            data[i] = String.valueOf(site);
+            i++;
+        }
+
+
+        //按行写出
+        writer.write(
+                title,
+                data
+        );
 
     }
 
