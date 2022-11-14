@@ -36,9 +36,9 @@ public class DownloadFileController {
         if (logList.size() == 0) {
             R.error("无数据导出");
         }
-        String sTitle = "id,用户名,操作类型,操作方法,创建时间";
+        String sTitle = "检测点id,桩号,车道,左侧初读数,左侧终读数,左侧弯沉值,右侧初读数,右侧终读数,右侧弯沉值,左侧支点修正系数,右侧支点修正系数,温度修正,备注,外键,更新人,更新时间,创建时间";
         String fName = "log_";
-        String mapKey = "id,username,operation,method,createDate";
+        String mapKey = "siteid,sitecode,sitelane,lamx,lmin,deflection1,rmax,rmin,deflection2,lfindex,rlfindex,tindex,siteremark,modifiebdy,createDate";
         dataList = new ArrayList<>();
         Map<String, Object> map = null;
         for (Site order : logList) {
@@ -51,6 +51,7 @@ public class DownloadFileController {
             map.put("deflection1", order.getDeflectio1());
             map.put("rmax", order.getRmax());
             map.put("rmin", order.getRmin());
+            map.put("deflection2", order.getDeflectio2());
             map.put("lfindex", order.getLfindex());
             map.put("rlfindex", order.getRfindex());
             map.put("tindex", order.getTindex());

@@ -10,4 +10,9 @@ class WanchengDemoApplicationTests {
     void contextLoads() {
     }
 
+    @Test
+    public void test(){
+         
+    }
+
 }
