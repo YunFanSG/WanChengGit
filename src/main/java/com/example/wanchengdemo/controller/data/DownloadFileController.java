@@ -3,6 +3,7 @@ package com.example.wanchengdemo.controller.data;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.wanchengdemo.commom.R;
 import com.example.wanchengdemo.entity.data.Site;
+import com.example.wanchengdemo.service.data.SegmentService;
 import com.example.wanchengdemo.service.data.SiteService;
 import com.example.wanchengdemo.util.data.ExportUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +25,16 @@ import java.util.Map;
 @RequestMapping("/test")
 @Slf4j
 public class DownloadFileController {
+
+
+    @Autowired
+    private SegmentService segmentService;
+
     @Autowired
     private SiteService siteService;
+
     @GetMapping("/file")
-    public R<String> download(HttpServletResponse response,String siteid) {
+    public R<String> download(HttpServletResponse response,String segmentid, String siteid) {
         LambdaQueryWrapper<Site> siteLambdaQueryWrapper = new LambdaQueryWrapper<>();
         siteLambdaQueryWrapper.eq(Site::getSiteid,siteid);
 
