@@ -45,7 +45,7 @@ public class DownloadFileController {
         }
         String sTitle = "检测点id,桩号,车道,左侧初读数,左侧终读数,左侧弯沉值,右侧初读数,右侧终读数,右侧弯沉值,左侧支点修正系数,右侧支点修正系数,温度修正,备注,外键,更新人,更新时间,创建时间";
         String fName = "log_";
-        String mapKey = "siteid,sitecode,sitelane,lamx,lmin,deflection1,rmax,rmin,deflection2,lfindex,rlfindex,tindex,siteremark,modifiebdy,createDate";
+        String mapKey = "siteid,sitecode,sitelane,lamx,lmin,deflection1,rmax,rmin,deflection2,lfindex,rlfindex,tindex,siteremark,sitesid,modifiebdy,update_time,createDate";
         dataList = new ArrayList<>();
         Map<String, Object> map = null;
         for (Site order : logList) {
@@ -63,6 +63,7 @@ public class DownloadFileController {
             map.put("rlfindex", order.getRfindex());
             map.put("tindex", order.getTindex());
             map.put("siteremark", order.getSiteremark());
+            map.put("sitesid", order.getSitesid());
             map.put("modifiebdy", order.getModifiedby());
             map.put("update_time", order.getUpdateTime());
             map.put("createDate", DateFormatUtils.format(order.getCreateTime(), "yyyy/MM/dd HH:mm"));
