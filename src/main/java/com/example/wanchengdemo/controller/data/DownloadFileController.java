@@ -2,11 +2,13 @@ package com.example.wanchengdemo.controller.data;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.wanchengdemo.commom.R;
+import com.example.wanchengdemo.entity.data.Segment;
 import com.example.wanchengdemo.entity.data.Site;
 import com.example.wanchengdemo.service.data.SegmentService;
 import com.example.wanchengdemo.service.data.SiteService;
 import com.example.wanchengdemo.util.data.ExportUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,13 +35,27 @@ public class DownloadFileController {
     @Autowired
     private SiteService siteService;
 
+
+    /**
+     *
+     * @param response  response
+     * @param segmentid 检测段落                                                                                                                                                 id
+     * @param siteid    检测点id
+     * @return
+     */
     @GetMapping("/file")
     public R<String> download(HttpServletResponse response,String segmentid, String siteid) {
+
+        LambdaQueryWrapper<Segment> segmentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        segmentLambdaQueryWrapper.eq(StringUtils.isNotEmpty(segmentid),Segment::getSegid,segmentid);
+
         LambdaQueryWrapper<Site> siteLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        siteLambdaQueryWrapper.eq(Site::getSiteid,siteid);
+        siteLambdaQueryWrapper.eq(StringUtils.isNotEmpty(siteid),Site::getSiteid,siteid);
 
         List<Map<String, Object>> dataList = null;
-        List<Site> logList = siteService.list(siteLambdaQueryWrapper);// 查询到要导出的信息
+
+
+        List<Site> logList = siteService.list(siteLambdaQueryWrapper);// 查询到要导出的信息  site
         if (logList.size() == 0) {
             R.error("无数据导出");
         }
