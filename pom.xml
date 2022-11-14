@@ -152,12 +152,6 @@
             <version>5.8.8</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/io.github.bovane/ruoyi-common -->
-        <dependency>
-            <groupId>io.github.bovane</groupId>
-            <artifactId>ruoyi-common</artifactId>
-            <version>3.7.0</version>
-        </dependency>
 
 
         <!--JWT-->
