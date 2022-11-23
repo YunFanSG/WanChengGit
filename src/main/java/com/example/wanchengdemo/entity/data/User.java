@@ -1,11 +1,13 @@
 package com.example.wanchengdemo.entity.data;
 
 
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 
 public class User implements Serializable {
-
+  @TableId
   private String uid;
   private String username;
   private String pwd;

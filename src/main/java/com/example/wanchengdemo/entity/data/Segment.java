@@ -1,10 +1,12 @@
 package com.example.wanchengdemo.entity.data;
 
 
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.sql.Timestamp;
 
 public class Segment {
-
+@TableId
   private String segid;
   private String segrange;
   private String segdesign;

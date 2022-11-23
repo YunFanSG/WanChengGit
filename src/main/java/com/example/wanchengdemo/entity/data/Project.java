@@ -1,10 +1,13 @@
 package com.example.wanchengdemo.entity.data;
 
 
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.sql.Timestamp;
 
 public class Project {
 
+  @TableId
   private String pid;
   private String pname;
   private String powner;

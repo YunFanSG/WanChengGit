@@ -6,6 +6,7 @@ import cn.hutool.core.text.csv.*;
 import cn.hutool.core.util.CharsetUtil;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CsvTest {
@@ -42,6 +43,17 @@ public class CsvTest {
         writer.write(
                 title
         );
+    }
+
+
+
+    @Test
+    public void listTest(){
+        List<String> animal = new ArrayList<>();
+
+        animal.add("cat");
+        System.out.println(animal.get(0));
+
     }
 
 

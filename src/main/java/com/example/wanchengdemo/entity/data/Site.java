@@ -1,10 +1,12 @@
 package com.example.wanchengdemo.entity.data;
 
 
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.sql.Timestamp;
 
 public class Site {
-
+  @TableId
   private String siteid;
   private String sitecode;
   private String sitelane;

@@ -1,10 +1,12 @@
 package com.example.wanchengdemo.entity.data;
 
 
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.sql.Timestamp;
 
 public class Section {
-
+  @TableId
   private String sid;
   private String sname;
   private String stesting;

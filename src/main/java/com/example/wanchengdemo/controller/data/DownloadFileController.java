@@ -2,9 +2,11 @@ package com.example.wanchengdemo.controller.data;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.wanchengdemo.commom.R;
+import com.example.wanchengdemo.entity.data.Project;
 import com.example.wanchengdemo.entity.data.Section;
 import com.example.wanchengdemo.entity.data.Segment;
 import com.example.wanchengdemo.entity.data.Site;
+import com.example.wanchengdemo.service.data.ProjectService;
 import com.example.wanchengdemo.service.data.SectionService;
 import com.example.wanchengdemo.service.data.SegmentService;
 import com.example.wanchengdemo.service.data.SiteService;
@@ -31,6 +33,9 @@ import java.util.Map;
 public class DownloadFileController {
 
     @Autowired
+    private ProjectService projectService;
+
+    @Autowired
     private SectionService sectionService;
 
     @Autowired
@@ -49,33 +54,92 @@ public class DownloadFileController {
      */
 
     @GetMapping("/file")
-    public R<String> download(HttpServletResponse response,String sectionid,String segmentid, String siteid) {
+    public R<String> download(HttpServletResponse response,String projectidList ,String sectionid,String segmentid, String siteid) {
 
-        LambdaQueryWrapper<Section> sectionLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        sectionLambdaQueryWrapper.eq(StringUtils.isNotEmpty(sectionid),Section::getSid,sectionid);
-        List<Section> sectionList = sectionService.list(sectionLambdaQueryWrapper);
-//------segment-条件构造--------------------------------------------------------------------------------------------------------------------------------------------
-        LambdaQueryWrapper<Segment> segmentLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        segmentLambdaQueryWrapper.eq(StringUtils.isNotEmpty(segmentid),Segment::getSegid,segmentid);    //将segmentid作为查询条件
-        segmentLambdaQueryWrapper.eq(StringUtils.isNotEmpty(sectionid),Segment::getSegsid,sectionid);   //将sectionid作为查询条件
-        Segment one = segmentService.getOne(segmentLambdaQueryWrapper);     //查
-        List<Segment> list = segmentService.list(segmentLambdaQueryWrapper);
-//---------------------------------------------------------------------------------------------------------------------------------------------------
-        LambdaQueryWrapper<Site> siteLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        siteLambdaQueryWrapper.eq(StringUtils.isNotEmpty(siteid),Site::getSiteid,siteid);
-        //segment检测段限制
-  //      siteLambdaQueryWrapper.eq(StringUtils.isNotEmpty(one.getSegid()),Site::getSitesid,one.getSegid());
-        //当传入参数包含segmentid时，导出相应检测段下所有检测点数据
-        siteLambdaQueryWrapper.eq(StringUtils.isNotEmpty(segmentid),Site::getSitesid,segmentid);
-//------------------------------------------------------------------------------------------------------------------------------------------------
+/*        for (String projectid : projectidList) {
+            if (StringUtils.isNotEmpty(projectid)){
+                LambdaQueryWrapper<Project> projectLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                projectLambdaQueryWrapper.eq(Project::getPid,projectid);
+
+                String pid = projectService.getOne(projectLambdaQueryWrapper).getPid();
+                log.info(pid);
+            }
+        }*/
+
         List<Map<String, Object>> dataList = null;
 
+        //section条件构造
+        LambdaQueryWrapper<Section> sectionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+
+        //segment条件构造
+        LambdaQueryWrapper<Segment> segmentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        segmentLambdaQueryWrapper.eq(StringUtils.isNotEmpty(sectionid),Segment::getSegsid,sectionid);   //将 sid 作为查询条件
+        segmentLambdaQueryWrapper.eq(StringUtils.isNotEmpty(segmentid),Segment::getSegid,segmentid);    //将segmentid作为查询条件
+
+        //site条件构造
+        LambdaQueryWrapper<Site> siteLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        siteLambdaQueryWrapper.eq(StringUtils.isNotEmpty(siteid),Site::getSiteid,siteid);
+
+
+
+
+//------section-导出---------------------------------------------------------------------------------------------------------------------------------------------
+
+        List<Site> Flist = new ArrayList<Site>();    //:存放循环内site数据
+        if (StringUtils.isNotEmpty(sectionid)){
+            sectionLambdaQueryWrapper.eq(Section::getSid,sectionid);    //条件构造
+            //查询section下属segment
+            List<Segment> segmentList = segmentService.list(segmentLambdaQueryWrapper);
+            for (Segment segment : segmentList) {
+                //获得segmentID
+                String segmentFId = segment.getSegid();
+                //查询所属site
+                Site siteServiceOne = null;
+
+                siteLambdaQueryWrapper.eq(Site::getSitesid,segmentFId); //添加循环内segmentId条件
+                List<Site> FsiteList = siteService.list(siteLambdaQueryWrapper);
+
+
+                Flist.addAll(FsiteList);
+
+            }
+
+        }
+
+
+//        Section section = sectionService.getOne(sectionLambdaQueryWrapper);
+//        List<Section> sectionList = sectionService.list(sectionLambdaQueryWrapper);
+
+//------segment-导出--------------------------------------------------------------------------------------------------------------------------------------------
+        List<Segment> list = segmentService.list(segmentLambdaQueryWrapper);
+
+
+
+//------site-数据-导出--------------------------------------------------------------------------------------------------------------------------------------------
+
+        //当传入参数包含segmentid时，导出相应检测段下所有检测点数据
+        siteLambdaQueryWrapper.eq(StringUtils.isNotEmpty(segmentid),Site::getSitesid,segmentid);
+        //传入单独siteid时，仅导出该检测点
         List<Site> logList = siteService.list(siteLambdaQueryWrapper);
+        //当传入参数包含sectionid时，导出相应合同段下所有检测点数据
+        if (Flist  != null){
+            logList = Flist;
+
+        }else {
+            log.info("无section数据");
+        }
+
+
+        //site数据写入
+
+        //       List<Map<String, Object>> dataList = null;
+
 //        List<Site> logList = siteService.list(siteLambdaQueryWrapper);// 查询到要导出的信息  site
+
         if (logList.size() == 0) {
             R.error("无数据导出");
         }
-        //site数据
+
         String sTitle = "检测点id,桩号,车道,左侧初读数,左侧终读数,左侧弯沉值,右侧初读数,右侧终读数,右侧弯沉值,左侧支点修正系数,右侧支点修正系数,温度修正,备注,外键,更新人,更新时间,创建时间";
         String fName = "log_";
         String mapKey = "siteid,sitecode,sitelane,lamx,lmin,deflection1,rmax,rmin,deflection2,lfindex,rlfindex,tindex,siteremark,sitesid,modifiebdy,update_time,createDate";
